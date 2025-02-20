@@ -1,4 +1,4 @@
-### Intel Denvr Gaudi Embedding Connector Blueprint:
+### Intel Denvr Gaudi Connector Blueprint:
 
 ## 1. Add Denvr dataworks endpoint to trusted URLs:
 
@@ -13,16 +13,17 @@ PUT /_cluster/settings
 }
 ```
 
-## 2. Generate access-token to access Vertex AI
+## 2. Generate access-token to access Denvr Cloud
 
-Denvr Dataworks API can be only accessed by using the access tokens. You can request these by contacting Denvr Dataworks directly at vaishali@denvrdata.com:
+Denvr Dataworks Inference service can be only accessed by using the access tokens. You can request these by contacting Denvr Dataworks directly at vaishali@denvrdata.com.
+
 
 ## 3. Create model group:
 
 ```json
 POST /_plugins/_ml/model_groups/_register
 {
-    "name": "remote_model_group_intel",
+    "name": "remote_model_group_intel_denvr",
     "description": "This is an example group for embedding models"
 }
 ```
@@ -35,14 +36,12 @@ Sample response:
 }
 ```
 
+## 4. Register model for Denvr embedding model to model group:
 
-## 3. Register model for VertexAI embedding model:
-
-Refer to [VertexAI Service REST API reference - Embedding](https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings/get-text-embeddings#get_text_embeddings_for_a_snippet_of_text).
+Refer to [Denvr Cloud Docs API Usage reference](https://docs.denvrdata.com/docs/api-reference).
 
 In order to use this, you need to supply the values for the below attributes
 
-* Project Id
 * Model Id
 * Access token
 
@@ -50,21 +49,20 @@ In order to use this, you need to supply the values for the below attributes
 ```json
 POST /_plugins/_ml/models/_register
 {
-    "name": "vertexAI: model to generate embeddings",
+    "name": "Denvr Gaudi: model to generate embeddings",
     "function_name": "remote",
     "model_group_id": "BPtPEIwBqYi_Zeg-SR7R",
-    "description": "test vertexAI model",
+    "description": "test Denvr Intel model",
     "connector": {
-        "name": "VertexAI Connector",
-        "description": "The connector to public vertexAI model service for text embedding",
+        "name": "Intel Denvr Connector",
+        "description": "The connector to public Denvr inference service for text embedding",
         "version": 1,
         "protocol": "http",
-        "parameters": {
-            "project": "<YOUR PROJECT_ID>",
+        "parameters": {            
             "model_id": "<YOUR MODEL_ID>"
         },
         "credential": {
-            "vertexAI_token": "<YOUR ACCESS TOKEN>"
+            "Denvr_key": "<YOUR ACCESS TOKEN>"
         },
         "actions": [
             {
@@ -217,9 +215,7 @@ Response:
 
 ## 8. Update the access token
 
-This requirement arises because the Vertex API can only be accessed using the GCP access token, which has a limited lifespan. Applications are responsible for refreshing this token as needed. 
-
-Note:  This update feature is only avaialable in 2.12 or later
+This requirement arises to renew the current access token, which has a limited lifespan. Applications are responsible for refreshing this token as needed. 
 
 ```json
 POST /_plugins/_ml/models/pn8scY4B2QHLlv0i6LZB
